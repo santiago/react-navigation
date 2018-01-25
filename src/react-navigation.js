@@ -20,7 +20,7 @@ module.exports = {
     return require('./navigators/createNavigator').default;
   },
   get StackNavigator() {
-    return require('./navigators/StackNavigator').default;
+    return require('./navigators/createStackNavigator').default;
   },
   get TabNavigator() {
     return require('./navigators/TabNavigator').default;
