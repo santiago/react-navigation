@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, Platform, ScrollView } from 'react-native';
 
-import createNavigator from './createNavigator';
+import createNavigatorDEPRECATED from './createNavigatorDEPRECATED';
 import createNavigationContainer from '../createNavigationContainer';
 import TabRouter from '../routers/TabRouter';
 import DrawerScreen from '../views/Drawer/DrawerScreen';
@@ -67,9 +67,12 @@ const DrawerNavigator = (routeConfigs, config = {}) => {
   const drawerRouter = TabRouter(
     {
       [drawerCloseRoute]: {
-        screen: createNavigator(contentRouter, routeConfigs, config)(props => (
-          <DrawerScreen {...props} />
-        )),
+        screen: createNavigatorDEPRECATED(
+          contentRouter,
+          routeConfigs,
+          config,
+          NavigatorTypes.DRAWER
+        )(props => <DrawerScreen {...props} />),
       },
       [drawerOpenRoute]: {
         screen: () => null,
@@ -83,23 +86,26 @@ const DrawerNavigator = (routeConfigs, config = {}) => {
     }
   );
 
-  const navigator = createNavigator(drawerRouter, routeConfigs, config)(
-    props => (
-      <DrawerView
-        {...props}
-        drawerBackgroundColor={drawerBackgroundColor}
-        drawerLockMode={drawerLockMode}
-        useNativeAnimations={useNativeAnimations}
-        drawerWidth={drawerWidth}
-        contentComponent={contentComponent}
-        contentOptions={contentOptions}
-        drawerPosition={drawerPosition}
-        drawerOpenRoute={drawerOpenRoute}
-        drawerCloseRoute={drawerCloseRoute}
-        drawerToggleRoute={drawerToggleRoute}
-      />
-    )
-  );
+  const navigator = createNavigatorDEPRECATED(
+    drawerRouter,
+    routeConfigs,
+    config,
+    NavigatorTypes.DRAWER
+  )(props => (
+    <DrawerView
+      {...props}
+      drawerBackgroundColor={drawerBackgroundColor}
+      drawerLockMode={drawerLockMode}
+      useNativeAnimations={useNativeAnimations}
+      drawerWidth={drawerWidth}
+      contentComponent={contentComponent}
+      contentOptions={contentOptions}
+      drawerPosition={drawerPosition}
+      drawerOpenRoute={drawerOpenRoute}
+      drawerCloseRoute={drawerCloseRoute}
+      drawerToggleRoute={drawerToggleRoute}
+    />
+  ));
 
   return createNavigationContainer(navigator);
 };
