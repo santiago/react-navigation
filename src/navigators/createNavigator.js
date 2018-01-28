@@ -34,6 +34,7 @@ function createNavigator(NavigatorView, router, navigationConfig) {
 
       return (
         <NavigatorView
+          screenProps={screenProps}
           navigation={navigation}
           navigationConfig={navigationConfig}
           sceneDescriptors={sceneDescriptors}

@@ -350,7 +350,7 @@ class StackViewLayout extends React.Component {
     }
     return (
       <SceneView
-        screenProps={this.props.screenProps}
+        screenProps={screenProps}
         navigation={navigation}
         component={SceneComponent}
       />
@@ -378,8 +378,7 @@ class StackViewLayout extends React.Component {
         {...this.props}
         key={`card_${scene.key}`}
         style={[style, this.props.cardStyle]}
-        scene={scene}
-      >
+        scene={scene}>
         {this._renderInnerScene(scene)}
       </Card>
     );
