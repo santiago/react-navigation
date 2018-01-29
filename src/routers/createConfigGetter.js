@@ -1,7 +1,6 @@
 import invariant from '../utils/invariant';
 
 import getScreenForRouteName from './getScreenForRouteName';
-import addNavigationHelpers from '../addNavigationHelpers';
 import validateScreenOptions from './validateScreenOptions';
 import getChildEventSubscriber from '../getChildEventSubscriber';
 
@@ -45,11 +44,7 @@ export default (routeConfigs, navigatorScreenConfig) => (
 
   const configOptions = { navigation, screenProps: screenProps || {} };
 
-  let outputConfig = applyConfig(
-    navigatorScreenConfig,
-    outputConfig,
-    configOptions
-  );
+  let outputConfig = applyConfig(navigatorScreenConfig, {}, configOptions);
   outputConfig = applyConfig(
     componentScreenConfig,
     outputConfig,

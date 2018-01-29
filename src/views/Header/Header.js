@@ -38,7 +38,7 @@ class Header extends React.PureComponent {
   };
 
   _getHeaderTitleString(scene) {
-    const options = scene.screenDescriptor.options;
+    const options = scene.sceneDescriptor.options;
     if (typeof options.headerTitle === 'string') {
       return options.headerTitle;
     }
@@ -54,7 +54,7 @@ class Header extends React.PureComponent {
     if (!lastScene) {
       return null;
     }
-    const { headerBackTitle } = lastScene.screenDescriptor.options;
+    const { headerBackTitle } = lastScene.sceneDescriptor.options;
     if (headerBackTitle || headerBackTitle === null) {
       return headerBackTitle;
     }
@@ -66,11 +66,11 @@ class Header extends React.PureComponent {
     if (!lastScene) {
       return null;
     }
-    return lastScene.screenDescriptor.options.headerTruncatedBackTitle;
+    return lastScene.sceneDescriptor.options.headerTruncatedBackTitle;
   }
 
   _renderTitleComponent = props => {
-    const { options } = props.scene.screenDescriptor;
+    const { options } = props.scene.sceneDescriptor;
     const headerTitle = options.headerTitle;
     if (React.isValidElement(headerTitle)) {
       return headerTitle;
@@ -103,14 +103,15 @@ class Header extends React.PureComponent {
       <RenderedHeaderTitle
         onLayout={onLayoutIOS}
         allowFontScaling={allowFontScaling == null ? true : allowFontScaling}
-        style={[color ? { color } : null, titleStyle]}>
+        style={[color ? { color } : null, titleStyle]}
+      >
         {titleString}
       </RenderedHeaderTitle>
     );
   };
 
   _renderLeftComponent = props => {
-    const { options } = props.scene.screenDescriptor;
+    const { options } = props.scene.sceneDescriptor;
     if (
       React.isValidElement(options.headerLeft) ||
       options.headerLeft === null
@@ -131,7 +132,7 @@ class Header extends React.PureComponent {
     const goBack = () => {
       // Go back on next tick because button ripple effect needs to happen on Android
       requestAnimationFrame(() => {
-        this.props.navigation.goBack(props.scene.screenDescriptor.key);
+        this.props.navigation.goBack(props.scene.sceneDescriptor.key);
       });
     };
     return (
@@ -149,7 +150,7 @@ class Header extends React.PureComponent {
   };
 
   _renderRightComponent = props => {
-    const { headerRight } = props.scene.screenDescriptor.options;
+    const { headerRight } = props.scene.sceneDescriptor.options;
     return headerRight || null;
   };
 
@@ -231,7 +232,8 @@ class Header extends React.PureComponent {
             ...this.props,
             ...props,
           }),
-        ]}>
+        ]}
+      >
         {subView}
       </Animated.View>
     );
@@ -248,7 +250,8 @@ class Header extends React.PureComponent {
     return (
       <View
         style={[StyleSheet.absoluteFill, styles.header]}
-        key={`scene_${props.scene.key}`}>
+        key={`scene_${props.scene.key}`}
+      >
         {title}
         {left}
         {right}
@@ -285,7 +288,7 @@ class Header extends React.PureComponent {
       ...rest
     } = this.props;
 
-    const { headerStyle } = scene.screenDescriptor.options;
+    const { headerStyle } = scene.sceneDescriptor.options;
     const appBarHeight = Platform.OS === 'ios' ? (isLandscape ? 32 : 44) : 56;
     const containerStyles = [
       styles.container,
@@ -299,7 +302,8 @@ class Header extends React.PureComponent {
       <Animated.View {...rest}>
         <SafeAreaView
           style={containerStyles}
-          forceInset={{ top: 'always', bottom: 'never' }}>
+          forceInset={{ top: 'always', bottom: 'never' }}
+        >
           <View style={styles.appBar}>{appBar}</View>
         </SafeAreaView>
       </Animated.View>

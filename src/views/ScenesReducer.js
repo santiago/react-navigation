@@ -86,7 +86,7 @@ export default function ScenesReducer(
   nextState.routes.forEach((route, index) => {
     const key = SCENE_KEY_PREFIX + route.key;
 
-    let screenDescriptor =
+    let sceneDescriptor =
       sceneDescriptors && sceneDescriptors.find(d => d.state.key === route.key);
 
     const scene = {
@@ -95,7 +95,7 @@ export default function ScenesReducer(
       isStale: false,
       key,
       route,
-      screenDescriptor,
+      sceneDescriptor,
     };
     invariant(
       !nextKeys.has(key),
@@ -120,7 +120,7 @@ export default function ScenesReducer(
         return;
       }
       const lastScene = scenes.find(scene => scene.route.key === route.key);
-      const screenDescriptor = lastScene && lastScene.screenDescriptor;
+      const sceneDescriptor = lastScene && lastScene.sceneDescriptor;
 
       staleScenes.set(key, {
         index,
@@ -128,7 +128,7 @@ export default function ScenesReducer(
         isStale: true,
         key,
         route,
-        screenDescriptor,
+        sceneDescriptor,
       });
     });
   }

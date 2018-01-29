@@ -77,7 +77,7 @@ class StackViewLayout extends React.Component {
   _immediateIndex = null;
 
   _renderHeader(scene, headerMode) {
-    const { options } = scene.screenDescriptor;
+    const { options } = scene.sceneDescriptor;
     const { header } = options;
 
     if (typeof header !== 'undefined' && typeof header !== 'function') {
@@ -169,7 +169,7 @@ class StackViewLayout extends React.Component {
     } = this.props;
     const { index } = navigation.state;
     const isVertical = mode === 'modal';
-    const { options } = scene.screenDescriptor;
+    const { options } = scene.sceneDescriptor;
 
     const gestureDirectionInverted = options.gestureDirection === 'inverted';
 
@@ -204,7 +204,7 @@ class StackViewLayout extends React.Component {
           : currentDragPosition - currentDragDistance;
         // Compare to the gesture distance relavant to card or modal
 
-        const { options } = scene.screenDescriptor;
+        const { options } = scene.sceneDescriptor;
 
         const {
           gestureResponseDistance: userGestureResponseDistance = {},
@@ -329,7 +329,7 @@ class StackViewLayout extends React.Component {
   }
 
   _renderInnerScene(scene) {
-    const { options, navigation, getComponent } = scene.screenDescriptor;
+    const { options, navigation, getComponent } = scene.sceneDescriptor;
     const SceneComponent = getComponent();
 
     const { screenProps } = this.props;
@@ -378,7 +378,8 @@ class StackViewLayout extends React.Component {
         {...this.props}
         key={`card_${scene.key}`}
         style={[style, this.props.cardStyle]}
-        scene={scene}>
+        scene={scene}
+      >
         {this._renderInnerScene(scene)}
       </Card>
     );

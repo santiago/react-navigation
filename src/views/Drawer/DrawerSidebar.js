@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import withCachedChildNavigation from '../../withCachedChildNavigation';
 import NavigationActions from '../../NavigationActions';
 import invariant from '../../utils/invariant';
 
@@ -10,25 +9,17 @@ import SafeAreaView from '../SafeAreaView';
 /**
  * Component that renders the sidebar screen of the drawer.
  */
+
 class DrawerSidebar extends React.PureComponent {
   _getScreenOptions = routeKey => {
-    const DrawerScreen = this.props.router.getComponentForRouteName(
-      'DrawerClose'
+    const descriptor = this.props.sceneDescriptors.find(
+      d => d.key === routeKey
     );
     invariant(
-      DrawerScreen.router,
-      'NavigationComponent with routeName DrawerClose should be a Navigator'
+      descriptor.options,
+      'Cannot access screen descriptor options from drawer sidebar'
     );
-    const { [routeKey]: childNavigation } = this.props.childNavigationProps;
-    return DrawerScreen.router.getScreenOptions(
-      childNavigation.state.index !== undefined // if the child screen is a StackRouter then always show the screen options of its first screen (see #1914)
-        ? {
-            ...childNavigation,
-            state: { ...childNavigation.state, index: 0 },
-          }
-        : childNavigation,
-      this.props.screenProps
-    );
+    return descriptor.options;
   };
 
   _getLabel = ({ focused, tintColor, route }) => {
@@ -87,6 +78,7 @@ class DrawerSidebar extends React.PureComponent {
         <ContentComponent
           {...this.props.contentOptions}
           navigation={this.props.navigation}
+          sceneDescriptors={this.props.sceneDescriptors}
           items={state.routes}
           activeItemKey={
             state.routes[state.index] ? state.routes[state.index].key : null
@@ -95,7 +87,6 @@ class DrawerSidebar extends React.PureComponent {
           getLabel={this._getLabel}
           renderIcon={this._renderIcon}
           onItemPress={this._onItemPress}
-          router={this.props.router}
           drawerPosition={this.props.drawerPosition}
         />
       </View>
@@ -103,7 +94,7 @@ class DrawerSidebar extends React.PureComponent {
   }
 }
 
-export default withCachedChildNavigation(DrawerSidebar);
+export default DrawerSidebar;
 
 const styles = StyleSheet.create({
   container: {
