@@ -28,16 +28,20 @@ export default function getChildEventSubscriber(addListener, key) {
     }
   };
 
-  const emit = payload => {
-    const subscribers = getChildSubscribers(payload.type);
+  const emit = (type, payload) => {
+    const payloadWithType = { ...payload, type };
+    const subscribers = getChildSubscribers(type);
     subscribers &&
       subscribers.forEach(subs => {
-        subs(payload);
+        subs(payloadWithType);
       });
   };
 
   let isParentFocused = true;
-  let isChildFocused = false;
+  let hasEmittedChildFocusChange = true;
+
+  let lastEmittedEvent = 'didBlur';
+
   const cleanup = () => {
     upstreamSubscribers.forEach(subs => subs && subs.remove());
   };
@@ -55,110 +59,58 @@ export default function getChildEventSubscriber(addListener, key) {
       const { state, lastState, action } = payload;
       const lastRoutes = lastState && lastState.routes;
       const routes = state && state.routes;
+
       const lastFocusKey =
         lastState && lastState.routes && lastState.routes[lastState.index].key;
       const focusKey = routes && routes[state.index].key;
 
       const isFocused = focusKey === key;
-      const wasFocused = lastFocusKey === key;
       const lastRoute =
         lastRoutes && lastRoutes.find(route => route.key === key);
       const newRoute = routes && routes.find(route => route.key === key);
-      const eventContext = payload.context || 'Root';
       const childPayload = {
-        context: `${key}:${action.type}_${eventContext}`,
+        context: `${key}:${action.type}_${payload.context || 'Root'}`,
         state: newRoute,
         lastState: lastRoute,
         action,
         type: eventName,
       };
-
       const isTransitioning = !!state && state.isTransitioning;
-      const wasTransitioning = !!lastState && lastState.isTransitioning;
-      const didStartTransitioning = !wasTransitioning && isTransitioning;
-      const didFinishTransitioning = wasTransitioning && !isTransitioning;
-      const wasChildFocused = isChildFocused;
-      if (eventName !== 'action') {
-        switch (eventName) {
-          case 'didFocus':
-            isParentFocused = true;
-            break;
-          case 'didBlur':
-            isParentFocused = false;
-            break;
+
+      const previouslyLastEmittedEvent = lastEmittedEvent;
+
+      if (lastEmittedEvent === 'didBlur') {
+        if (eventName === 'willFocus' && isFocused) {
+          emit((lastEmittedEvent = 'willFocus'), childPayload);
+        } else if (eventName === 'action' && isFocused) {
+          emit((lastEmittedEvent = 'willFocus'), childPayload);
         }
-        if (isFocused && eventName === 'willFocus') {
-          emit(childPayload);
+      }
+      if (lastEmittedEvent === 'willFocus') {
+        if (eventName === 'didFocus' && isFocused && !isTransitioning) {
+          emit((lastEmittedEvent = 'didFocus'), childPayload);
+        } else if (!isTransitioning && isFocused && eventName === 'action') {
+          emit((lastEmittedEvent = 'didFocus'), childPayload);
         }
-        if (isFocused && !isTransitioning && eventName === 'didFocus') {
-          emit(childPayload);
-          isChildFocused = true;
-        }
-        if (isFocused && eventName === 'willBlur') {
-          emit(childPayload);
-        }
-        if (isFocused && !isTransitioning && eventName === 'didBlur') {
-          emit(childPayload);
-        }
-        return;
       }
 
-      // now we're exclusively handling the "action" event
-      if (!isParentFocused) {
-        return;
+      if (lastEmittedEvent === 'didFocus') {
+        if (!isFocused || eventName === 'willBlur') {
+          emit((lastEmittedEvent = 'willBlur'), childPayload);
+        } else if (
+          eventName === 'action' &&
+          previouslyLastEmittedEvent === 'didFocus'
+        ) {
+          emit('action', childPayload);
+        }
       }
 
-      if (isChildFocused && newRoute) {
-        // fire this action event to pass navigation events to children subscribers
-        emit(childPayload);
-      }
-      if (isFocused && didStartTransitioning && !isChildFocused) {
-        emit({
-          ...childPayload,
-          type: 'willFocus',
-        });
-      }
-      if (isFocused && didFinishTransitioning && !isChildFocused) {
-        emit({
-          ...childPayload,
-          type: 'didFocus',
-        });
-        isChildFocused = true;
-      }
-      if (isFocused && !isChildFocused && !didStartTransitioning) {
-        emit({
-          ...childPayload,
-          type: 'willFocus',
-        });
-        emit({
-          ...childPayload,
-          type: 'didFocus',
-        });
-        isChildFocused = true;
-      }
-      if (!isFocused && didStartTransitioning && isChildFocused) {
-        emit({
-          ...childPayload,
-          type: 'willBlur',
-        });
-      }
-      if (!isFocused && didFinishTransitioning && isChildFocused) {
-        emit({
-          ...childPayload,
-          type: 'didBlur',
-        });
-        isChildFocused = false;
-      }
-      if (!isFocused && isChildFocused && !didStartTransitioning) {
-        emit({
-          ...childPayload,
-          type: 'willBlur',
-        });
-        emit({
-          ...childPayload,
-          type: 'didBlur',
-        });
-        isChildFocused = false;
+      if (lastEmittedEvent === 'willBlur') {
+        if (!isTransitioning && !isFocused && eventName === 'action') {
+          emit((lastEmittedEvent = 'didBlur'), childPayload);
+        } else if (eventName === 'didBlur') {
+          emit((lastEmittedEvent = 'didBlur'), childPayload);
+        }
       }
     })
   );
