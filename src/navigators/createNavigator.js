@@ -11,7 +11,7 @@ function createNavigator(NavigatorView, router, navigationConfig) {
     render() {
       const { navigation, screenProps } = this.props;
       const { dispatch, state, addListener } = navigation;
-      const { routes, index, isTransitioning } = state;
+      const { routes } = state;
 
       const sceneDescriptors = routes.map(route => {
         const getComponent = () =>
@@ -38,8 +38,6 @@ function createNavigator(NavigatorView, router, navigationConfig) {
           navigation={navigation}
           navigationConfig={navigationConfig}
           sceneDescriptors={sceneDescriptors}
-          index={index}
-          isTransitioning={isTransitioning}
         />
       );
     }

@@ -11,37 +11,10 @@ import TabBarBottom from '../views/TabView/TabBarBottom';
 const TabNavigator = (routeConfigs, config = {}) => {
   // Use the look native to the platform by default
   const tabsConfig = { ...TabNavigator.Presets.Default, ...config };
-  // const {
-  //   tabBarComponent,
-  //   tabBarPosition,
-  //   tabBarOptions,
-  //   swipeEnabled,
-  //   animationEnabled,
-  //   configureTransition,
-  //   initialLayout,
-  //   ...tabsConfig
-  // } = tabsConfig;
 
   const router = TabRouter(routeConfigs, tabsConfig);
 
   const navigator = createNavigator(TabView, router, tabsConfig);
-  // const navigator = createNavigator(
-  //   router,
-  //   routeConfigs,
-  //   config,
-  //   NavigatorTypes.TABS
-  // )(props => (
-  //   <TabView
-  //     {...props}
-  //     tabBarComponent={tabBarComponent}
-  //     tabBarPosition={tabBarPosition}
-  //     tabBarOptions={tabBarOptions}
-  //     swipeEnabled={swipeEnabled}
-  //     animationEnabled={animationEnabled}
-  //     configureTransition={configureTransition}
-  //     initialLayout={initialLayout}
-  //   />
-  // ));
 
   return createNavigationContainer(navigator);
 };
