@@ -23,6 +23,10 @@ export default function(navigation) {
       navigation.dispatch(
         NavigationActions.navigate({ routeName, params, action })
       ),
+    navigateTo: (key, routeName, params, action) =>
+      navigation.dispatch(
+        NavigationActions.navigate({ routeName, params, action, key })
+      ),
     /**
      * For updating current route params. For example the nav bar title and
      * buttons are based on the route params.
